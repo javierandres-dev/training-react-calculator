@@ -1,4 +1,6 @@
 :root {
+  --fs-xl: 3rem;
+  --fs-l: 2rem;
   --fs-base: 1.6rem;
 }
 *,

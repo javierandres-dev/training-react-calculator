@@ -1,0 +1,8 @@
+.key {
+  font-size: var(--fs-l);
+  width: 5rem;
+  height: 5rem;
+  margin: 1rem;
+  padding: 1rem;
+  border-radius: 1rem;
+}

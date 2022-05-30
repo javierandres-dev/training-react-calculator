@@ -1,5 +1,16 @@
 .calculator {
   width: 100%;
-  height: 80vh;
-  border: 0.1rem solid red;
+}
+.screen {
+  padding: 4rem;
+  text-align: end;
+  font-size: var(--fs-xl);
+}
+.keyboard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.row {
+  display: flex;
 }
