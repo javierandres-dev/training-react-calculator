@@ -6,55 +6,84 @@ import { Key } from './Key';
 export const Calculator = () => {
   const [current, setCurrent] = useState('0');
   const [operator, setOperator] = useState(null);
+  const [num1, setNum1] = useState(null);
+  const [num2, setNum2] = useState(null);
+  const [pending, setPending] = useState(null);
 
   const operations = ['/', 'x', '-', '+', '='];
 
-  let temp = null;
-
-  useEffect(() => {
-    console.log('current:', current);
-    console.log('temp:', temp);
+  const calculate = () => {
     if (operator === '/') {
-      console.log('division');
-    } else if (operator === 'x') {
-      console.log('multiplication');
-    } else if (operator === '-') {
-      console.log('subtraction');
-    } else if (operator === '+') {
-      console.log('addition');
-    } else if (operator === '=') {
+      setCurrent(num1 / num2);
+    }
+    if (operator === 'x') {
+      setCurrent(num1 * num2);
+    }
+    if (operator === '-') {
+      setCurrent(num1 - num2);
+    }
+    if (operator === '+') {
+      setCurrent(num1 + num2);
+    }
+    if (operator === '=') {
       console.log('equality');
     }
-  }, [operator]);
+    setOperator(null);
+    setNum1(null);
+    setNum2(null);
+    setPending(null);
+  };
+
+  useEffect(() => {
+    if (operator && !num1) {
+      setNum1(current);
+      setPending(true);
+    }
+    if (operator && num1 && pending) {
+      console.log('here');
+      setNum2(current);
+      setPending(true);
+    }
+  }, [operator, num1, num2, pending]);
 
   const handleClick = (value) => {
-    console.log('handleClick', value);
     if (!isNaN(value)) {
       if (current === '0') {
         setCurrent(value);
       } else {
-        temp = current;
-        setCurrent((temp += value));
-        temp = null;
+        let temp = null;
+        if (pending && num1) {
+          temp = '';
+          setPending(false);
+        } else {
+          temp = current;
+        }
+        temp += value;
+        setCurrent(temp);
       }
     } else if (value === '.') {
       if (current.includes(value)) {
         beep();
       } else {
-        temp = current;
-        setCurrent((temp += value));
-        temp = null;
+        let temp = current;
+        temp += value;
+        setCurrent(temp);
       }
     } else {
       for (const i of operations) {
         if (i === value) {
-          temp = value;
           setOperator(value);
           break;
         }
       }
     }
   };
+
+  console.log('current:', current);
+  console.log('operator:', operator);
+  console.log('num1:', num1);
+  console.log('num2:', num2);
+  console.log('pending:', pending);
 
   return (
     <div className='calculator'>

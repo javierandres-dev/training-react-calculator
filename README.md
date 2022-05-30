@@ -1,1 +1,1 @@
-# react-training
+# training-react-calculator
