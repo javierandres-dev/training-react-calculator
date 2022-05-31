@@ -4,57 +4,54 @@ import '../stylesheets/Calculator.css';
 import { Key } from './Key';
 
 export const Calculator = () => {
-  const [current, setCurrent] = useState('0');
+  const [current, setCurrent] = useState(null);
+  const [result, setResult] = useState(null);
   const [operator, setOperator] = useState(null);
   const [num1, setNum1] = useState(null);
   const [num2, setNum2] = useState(null);
-  const [pending, setPending] = useState(null);
+  const [num, setNum] = useState(false);
+  const [flag, setFlag] = useState(false);
 
-  const operations = ['/', 'x', '-', '+', '='];
+  const operations = ['/', 'x', '-', '+'];
 
-  const calculate = () => {
-    if (operator === '/') {
-      setCurrent(num1 / num2);
-    }
-    if (operator === 'x') {
-      setCurrent(num1 * num2);
-    }
-    if (operator === '-') {
-      setCurrent(num1 - num2);
-    }
-    if (operator === '+') {
-      setCurrent(num1 + num2);
-    }
-    if (operator === '=') {
-      console.log('equality');
-    }
-    setOperator(null);
+  const resetNums = () => {
     setNum1(null);
     setNum2(null);
-    setPending(null);
+    setOperator(null);
+    setFlag(false);
   };
 
-  useEffect(() => {
-    if (operator && !num1) {
-      setNum1(current);
-      setPending(true);
+  const calculate = () => {
+    const a = parseFloat(num1);
+    const b = parseFloat(num2);
+    if (operator === '/') {
+      setResult(a / b);
     }
-    if (operator && num1 && pending) {
-      console.log('here');
-      setNum2(current);
-      setPending(true);
+    if (operator === 'x') {
+      setResult(a * b);
     }
-  }, [operator, num1, num2, pending]);
+    if (operator === '-') {
+      setResult(a - b);
+    }
+    if (operator === '+') {
+      setResult(a + b);
+    }
+    resetNums();
+  };
 
   const handleClick = (value) => {
     if (!isNaN(value)) {
-      if (current === '0') {
+      if (result) {
+        setCurrent(value);
+        setNum(true);
+        setFlag(true);
+      } else if (current === '0') {
         setCurrent(value);
       } else {
         let temp = null;
-        if (pending && num1) {
+        if (num1 && !num2 && !flag) {
           temp = '';
-          setPending(false);
+          setFlag(true);
         } else {
           temp = current;
         }
@@ -62,28 +59,58 @@ export const Calculator = () => {
         setCurrent(temp);
       }
     } else if (value === '.') {
-      if (current.includes(value)) {
+      if (typeof current === 'string' && current.includes(value)) {
+        beep();
+      } else if (operator && typeof current === 'number') {
         beep();
       } else {
-        let temp = current;
+        let temp = null;
+        typeof current === 'number' ? (temp = '0') : (temp = current);
         temp += value;
         setCurrent(temp);
       }
+    } else if (value === '=') {
+      setNum(true);
     } else {
       for (const i of operations) {
         if (i === value) {
           setOperator(value);
+          setNum(true);
           break;
         }
       }
     }
   };
 
-  console.log('current:', current);
-  console.log('operator:', operator);
-  console.log('num1:', num1);
-  console.log('num2:', num2);
-  console.log('pending:', pending);
+  useEffect(() => {
+    setCurrent('0');
+  }, []);
+
+  useEffect(() => {
+    if (num && result) {
+      setNum1(result);
+      setResult(false);
+    }
+    if (num && !result && !num1) {
+      setNum1(current);
+    }
+    if (num && !result && num1) {
+      setNum2(current);
+    }
+    setNum(false);
+  }, [num]);
+
+  useEffect(() => {
+    if (num1 && num2) {
+      calculate();
+    }
+  }, [num1, num2]);
+
+  useEffect(() => {
+    if (result) {
+      setCurrent(result);
+    }
+  }, [result]);
 
   return (
     <div className='calculator'>
